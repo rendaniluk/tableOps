@@ -13,57 +13,59 @@
 
 
   <input type="button" class="Add" value="Add Entity">
+  <input type="button" class="getEnt" value="Get Entity">
+  
 </body>
 
 <script>
-//adding Entities to the table
-var addTableEntity = function(){
-  var url = 'https://' + 'azurestorageacount' + '.azurewebsites.net/api/Key/' + 'table_endpoint';
+  //adding Entities to the table
+  var addTableEntity = function () {
+    var url = 'https://' + 'azurestorageacount' + '.azurewebsites.net/api/Key/' + 'table_endpoint';
     $.get(url)
       .then(function (token) {
         var tableUri = 'https://' + 'azurestorageacount' + '.table.core.windows.net';
-var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, token);
-var objData = {
-  "message":{
-        "ms":"Change Office layout",
-        "when":"2018/06/11",
-        "likes":10,
-        "comments":[
-            {            
-            "ms":"Good Idea",
-            "date":"2018/06/10",
-            "user":"Muthu Mree"
-        },
-        {            
-            "ms":"Good Idea",
-            "date":"2018/06/10",
-            "user":"Mathe Mzee"
-        }
-    ]
-    }
-};
+        var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, token);
+        var objData = {
+          "message": {
+            "ms": "Change Office layout",
+            "when": "2018/06/11",
+            "likes": 10,
+            "comments": [
+              {
+                "ms": "Good Idea",
+                "date": "2018/06/10",
+                "user": "Muthu Mree"
+              },
+              {
+                "ms": "Good Idea",
+                "date": "2018/06/10",
+                "user": "Mathe Mzee"
+              }
+            ]
+          }
+        };
 
-var myMsg = JSON.stringify(objData);
+        var myMsg = JSON.stringify(objData);
 
-  var insertEntity = {
-    PartitionKey: {'_': 'PartitionKey'},
-    RowKey: {'_': 'RowKey'},
-    fullName:{'_': "nwana mtho"},
-    Message: {'_': myMsg}
-};
+        var insertEntity = {
+          PartitionKey: { '_': 'PartitionKey' },
+          RowKey: { '_': 'RowKey' },
+          fullName: { '_': "nwana mtho" },
+          Message: { '_': myMsg }
+        };
 
 
-tableService.insertOrReplaceEntity('TableName', insertEntity, function(error, result, response) {
-    if(error) {
-        // Insert table entity error
-        console.log("wrong turn")
-    } else {
-        // Insert table entity successfully
-        console.log(result, response);
-    }
-});
-})
-}
+        tableService.insertOrReplaceEntity('TableName', insertEntity, function (error, result, response) {
+          if (error) {
+            // Insert table entity error
+            console.log("wrong turn")
+          } else {
+            // Insert table entity successfully
+            console.log(result, response);
+          }
+        });
+      })
+  }
 
 
   //getting entities from the table
