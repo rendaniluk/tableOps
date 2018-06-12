@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="azure-storage.table.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+
+  <input type="button" class="Add" value="Add Entity">
+</body>
+
+<script>
+//adding Entities to the table
+var addTableEntity = function(){
+  var url = 'https://' + 'azurestorageacount' + '.azurewebsites.net/api/Key/' + 'table_endpoint';
+    $.get(url)
+      .then(function (token) {
+        var tableUri = 'https://' + 'azurestorageacount' + '.table.core.windows.net';
+var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, token);
+var objData = {
+  "message":{
+        "ms":"Change Office layout",
+        "when":"2018/06/11",
+        "likes":10,
+        "comments":[
+            {            
+            "ms":"Good Idea",
+            "date":"2018/06/10",
+            "user":"Muthu Mree"
+        },
+        {            
+            "ms":"Good Idea",
+            "date":"2018/06/10",
+            "user":"Mathe Mzee"
+        }
+    ]
+    }
+};
+
+var myMsg = JSON.stringify(objData);
+
+  var insertEntity = {
+    PartitionKey: {'_': 'PartitionKey'},
+    RowKey: {'_': 'RowKey'},
+    fullName:{'_': "nwana mtho"},
+    Message: {'_': myMsg}
+};
+
+
+tableService.insertOrReplaceEntity('TableName', insertEntity, function(error, result, response) {
+    if(error) {
+        // Insert table entity error
+        console.log("wrong turn")
+    } else {
+        // Insert table entity successfully
+        console.log(result, response);
+    }
+});
+})
+}
+
+
+  //getting entities from the table
+  var getTableEntity = function () {
+    var url = 'https://' + 'azurestorageacount' + '.azurewebsites.net/api/Key/' + 'table_endpoint';
+    $.get(url)
+      .then(function (token) {
+        var tableUri = 'https://' + 'azurestorageacount' + '.table.core.windows.net';
+        var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, token);
+        var tableQuery = new AzureStorage.Table.TableQuery().top(400);
+        tableService.queryEntities('tableName', tableQuery, null, function (error, results) {
+          if (error) {
+            // Query entities error
+          } else {
+            // console.log(results.entries)
+            for (var i = 0, entity; entity = results.entries[i]; i++) {
+              // Deal with entity object
+              var msgString = entity.Message._;
+              var msgObject = JSON.parse(msgString)
+              console.log(msgObject)
+            }
+          }
+        });
+      })
+  }
+
+  var getBtn = document.querySelector('.getEnt')
+  var addBtn = document.querySelector('.Add');
+  getBtn.addEventListener('click', getTableEntity);
+  addBtn.addEventListener('click', addTableEntity);
+</script>
+
+</html>
